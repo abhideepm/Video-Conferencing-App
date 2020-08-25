@@ -8,10 +8,7 @@ const App = () => {
 	const videoRef = useRef()
 
 	useEffect(() => {
-		const myPeer = new Peer({
-			host: '/',
-			port: '5001',
-		})
+		const myPeer = new Peer()
 		const socket = io(ENDPOINT)
 
 		socket.on('Hello', data => {

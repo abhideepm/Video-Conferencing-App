@@ -5,9 +5,19 @@
 	"repository": "https://github.com/abhideepm/Video-Conferencing-App.git",
 	"author": "Abhideep Maity <abhideepm@gmail.com>",
 	"license": "MIT",
+	"scripts": {
+		"client": "cd client && yarn start",
+		"server": "nodemon server.js",
+		"dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+		"start": "node server.js",
+		"heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+	},
 	"dependencies": {
 		"express": "^4.17.1",
 		"socket.io": "^2.3.0",
 		"uuid": "^8.3.0"
+	},
+	"devDependencies": {
+		"concurrently": "^5.3.0"
 	}
 }
