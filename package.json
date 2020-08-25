@@ -1,13 +1,13 @@
 {
-  "name": "video-conferencing-app",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/abhideepm/Video-Conferencing-App.git",
-  "author": "Abhideep Maity <abhideepm@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.17.1",
-    "socket.io": "^2.3.0",
-    "uuid": "^8.3.0"
-  }
+	"name": "video-conferencing-app",
+	"version": "1.0.0",
+	"main": "server.js",
+	"repository": "https://github.com/abhideepm/Video-Conferencing-App.git",
+	"author": "Abhideep Maity <abhideepm@gmail.com>",
+	"license": "MIT",
+	"dependencies": {
+		"express": "^4.17.1",
+		"socket.io": "^2.3.0",
+		"uuid": "^8.3.0"
+	}
 }
