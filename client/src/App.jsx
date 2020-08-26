@@ -1,7 +1,8 @@
-import { Grid } from '@material-ui/core'
+import { Grid, Button } from '@material-ui/core'
 import Peer from 'peerjs'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import io from 'socket.io-client'
+import VideoStream from './VideoStream'
 const ENDPOINT = `http://127.0.0.1:5000/`
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
 	const socket = io(ENDPOINT)
 	const [peers, setPeers] = useState({})
 	const [videoStreams, setVideoStreams] = useState([])
+	const roomId = useRef()
 
 	const addVideoStream = (userId, userVideoStream, muteStatus) => {
 		const videoProperties = {
@@ -20,42 +22,51 @@ const App = () => {
 		setVideoStreams(videoStreams.concat(videoProperties))
 	}
 
+	const removeVideoStream = userId => {
+		setVideoStreams(videoStreams.filter(obj => obj.id !== userId))
+	}
+
 	const connectToNewUser = (userId, stream) => {
 		const call = myPeer.call(userId, stream)
 		call.on('stream', userVideoStream => {
 			addVideoStream(userId, userVideoStream, false)
 		})
 		call.on('close', () => {
-			video.remove()
+			removeVideoStream(userId)
 		})
 		setPeers({ ...peers, userId: call })
-	}
-
-	const onCall = () => {
 		myPeer.on('call', call => {
 			call.answer(stream)
 			call.on('stream', userVideoStream => {
 				addVideoStream(userId, userVideoStream, false)
 			})
 			call.on('close', () => {
-				video.remove()
+				removeVideoStream(userId)
 			})
 		})
 	}
 
-	const onDisconnect = () => {
-		socket.on('user-disconnected', userId => {
-			if (peers[userId]) peers[userId].close()
-		})
-	}
+	socket.on('user-disconnected', userId => {
+		if (peers[userId]) {
+			peers[userId].close()
+			const filteredObj = Object.keys(peers)
+				.filter(key => key !== userId)
+				.reduce((acc, curr) => ({ ...acc, [curr]: peers[curr] }), {})
+			setPeers(filteredObj)
+		}
+	})
 
 	useEffect(() => {
+		socket.on('room-connected', id => {
+			roomId.current = id
+			console.log(roomId.current)
+		})
 		socket.on('Hello', data => {
 			setResponse(data)
 		})
 
 		myPeer.on('open', id => {
-			socket.emit('join-room', id)
+			socket.emit('join-room', roomId, id)
 		})
 		navigator.mediaDevices
 			.getUserMedia({ video: true, audio: true })
@@ -65,6 +76,7 @@ const App = () => {
 				})
 			})
 	}, [])
+
 	return (
 		<>
 			<Grid container>

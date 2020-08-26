@@ -6,18 +6,19 @@ const { v4: uuidv4 } = require('uuid')
 
 const port = process.env.PORT || 5000
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
 	res.redirect(`/${uuidv4()}`)
 })
 
 app.get('/:room', (req, res) => {
+	io.emit('room-connected', req.params.room)
 	res.send(req.params.room)
 })
 
 io.on('connection', socket => {
 	console.log('Client connected')
 	socket.emit('Hello', 'Hello From Server')
-	socket.on('join-room', roomId => {
+	socket.on('join-room', (roomId, userId) => {
 		socket.join(roomId)
 		socket.to(roomId).broadcast.emit('user-connected', userId)
 		socket.on('disconnected', () => {
