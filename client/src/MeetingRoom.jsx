@@ -12,62 +12,52 @@ const MeetingRoom = () => {
 	const [response, setResponse] = useState('')
 	const myPeer = new Peer()
 	const socket = io(ENDPOINT)
-	const [peers, setPeers] = useState({})
+	const peers = useRef({})
 	const [videoStreams, setVideoStreams] = useState([])
-	const roomId = useRef()
 
-	const addVideoStream = (userId, userVideoStream, muteStatus) => {
+	const addVideoStream = (userVideoStream, muteStatus) => {
 		const videoProperties = {
-			id: userId,
 			stream: userVideoStream,
 			muted: muteStatus,
 		}
+		console.log(videoProperties)
 		setVideoStreams(videoStreams.concat(videoProperties))
 	}
+	console.log(videoStreams)
 
-	const removeVideoStream = userId => {
-		setVideoStreams(videoStreams.filter(obj => obj.id !== userId))
+	const removeVideoStream = userStream => {
+		console.log(userStream)
+		setVideoStreams(videoStreams.filter(obj => obj.stream !== userStream))
 	}
 
 	const connectToNewUser = (userId, stream) => {
 		const call = myPeer.call(userId, stream)
+		let otherUserVideoStream = ''
 		call.on('stream', userVideoStream => {
-			addVideoStream(userId, userVideoStream, false)
+			otherUserVideoStream = userVideoStream
+			addVideoStream(userVideoStream, false)
 		})
 		call.on('close', () => {
-			removeVideoStream(userId)
+			removeVideoStream(otherUserVideoStream)
 		})
-		setPeers({ ...peers, userId: call })
-		myPeer.on('call', call => {
-			call.answer(stream)
-			call.on('stream', userVideoStream => {
-				addVideoStream(userId, userVideoStream, false)
-			})
-			call.on('close', () => {
-				removeVideoStream(userId)
-			})
-		})
+		peers.current[userId] = call
 	}
+	console.log(peers.current)
 
 	socket.on('user-disconnected', userId => {
-		if (peers[userId]) {
-			peers[userId].close()
-			const filteredObj = Object.keys(peers)
+		if (peers.current[userId]) {
+			console.log('disconnect client')
+			peers.current[userId].close()
+			const filteredObj = Object.keys(peers.current)
 				.filter(key => key !== userId)
-				.reduce((acc, curr) => ({ ...acc, [curr]: peers[curr] }), {})
-			setPeers(filteredObj)
+				.reduce((acc, curr) => ({ ...acc, [curr]: peers.current[curr] }), {})
+			peers.current = filteredObj
 		}
 	})
 
 	useEffect(() => {
-		socket.on('room-connected', id => {
-			console.log('room-connected')
-			roomId.current = id
-			console.log(roomId.current)
-		})
-		myPeer.on('open', id => {
-			console.log('open')
-			socket.emit('join-room', roomId.current, id)
+		myPeer.on('open', userId => {
+			socket.emit('join-room', id, userId)
 		})
 		socket.on('Hello', data => {
 			setResponse(data)
@@ -76,6 +66,18 @@ const MeetingRoom = () => {
 		navigator.mediaDevices
 			.getUserMedia({ video: true, audio: true })
 			.then(stream => {
+				addVideoStream(stream, true)
+				myPeer.on('call', call => {
+					call.answer(stream)
+					let otherUserVideoStream = ''
+					call.on('stream', userVideoStream => {
+						otherUserVideoStream = userVideoStream
+						addVideoStream(userVideoStream, false)
+					})
+					call.on('close', () => {
+						removeVideoStream(otherUserVideoStream)
+					})
+				})
 				socket.on('user-connected', userId => {
 					connectToNewUser(userId, stream)
 				})

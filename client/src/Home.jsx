@@ -3,8 +3,6 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { v4 as uuidV4 } from 'uuid'
 
-// TODO Add background image
-
 const Home = () => {
 	const history = useHistory()
 	return (
@@ -21,7 +19,7 @@ const Home = () => {
 						Welcome to Video Conferencing App
 					</Typography>
 				</Grid>
-				<Grid item justify="center" spacing={2} container>
+				<Grid item justify="center" spacing={1} container>
 					<Grid item>
 						<Button
 							variant="contained"

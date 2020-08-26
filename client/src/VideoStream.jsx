@@ -1,16 +1,18 @@
-import React from 'react'
 import { Grid } from '@material-ui/core'
-import { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 const VideoStream = ({ video, stream, muted }) => {
 	const videoRef = useRef()
-	videoRef.current.srcObject = stream
-	videoRef.current.addEventListener('loadedmetadata', () => {
-		videoRef.current.play()
-	})
+
+	useEffect(() => {
+		videoRef.current.srcObject = stream
+		videoRef.current.addEventListener('loadedmetadata', () => {
+			videoRef.current.play()
+		})
+	}, [])
 	return (
 		<Grid item>
-			<video muted ref={videoRef}></video>
+			<video muted={muted} ref={videoRef}></video>
 		</Grid>
 	)
 }
