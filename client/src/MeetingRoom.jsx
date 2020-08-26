@@ -4,12 +4,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import io from 'socket.io-client'
 import VideoStream from './VideoStream'
-const ENDPOINT = `http://127.0.0.1:5000/`
+const port = process.env.PORT || 5000
+const ENDPOINT = `http://127.0.0.1:${port}/`
 
 const MeetingRoom = () => {
-	const history = useHistory()
 	const { id } = useParams()
-	const [response, setResponse] = useState('')
 	const myPeer = new Peer()
 	const socket = io(ENDPOINT)
 	const peers = useRef({})
@@ -21,12 +20,12 @@ const MeetingRoom = () => {
 			muted: muteStatus,
 		}
 		console.log(videoProperties)
+		console.log(videoStreams)
 		setVideoStreams(videoStreams.concat(videoProperties))
 	}
 	console.log(videoStreams)
 
 	const removeVideoStream = userStream => {
-		console.log(userStream)
 		setVideoStreams(videoStreams.filter(obj => obj.stream !== userStream))
 	}
 
@@ -42,7 +41,6 @@ const MeetingRoom = () => {
 		})
 		peers.current[userId] = call
 	}
-	console.log(peers.current)
 
 	socket.on('user-disconnected', userId => {
 		if (peers.current[userId]) {
@@ -58,9 +56,6 @@ const MeetingRoom = () => {
 	useEffect(() => {
 		myPeer.on('open', userId => {
 			socket.emit('join-room', id, userId)
-		})
-		socket.on('Hello', data => {
-			setResponse(data)
 		})
 
 		navigator.mediaDevices
@@ -87,7 +82,6 @@ const MeetingRoom = () => {
 	return (
 		<Paper style={{ minHeight: '100vh' }}>
 			<Grid container>
-				{response}
 				{videoStreams.map(videoProp => (
 					<VideoStream {...videoProp} />
 				))}

@@ -20,12 +20,10 @@ app.use((req, res, next) => {
 
 io.on('connection', socket => {
 	console.log('Client connected')
-	socket.emit('Hello', 'Hello From Server')
 	socket.on('join-room', (roomId, userId) => {
 		socket.join(roomId)
 		socket.to(roomId).broadcast.emit('user-connected', userId)
 		socket.on('disconnect', () => {
-			console.log('disconnect', userId)
 			socket.to(roomId).broadcast.emit('user-disconnected', userId)
 		})
 	})
