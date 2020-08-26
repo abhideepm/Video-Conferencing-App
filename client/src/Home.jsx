@@ -1,13 +1,14 @@
-import { Button, Grid, Typography } from '@material-ui/core'
+import { Button, Grid, Typography, Paper } from '@material-ui/core'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
+import { v4 as uuidV4 } from 'uuid'
 
 // TODO Add background image
 
 const Home = () => {
 	const history = useHistory()
 	return (
-		<>
+		<Paper style={{ minHeight: '100vh' }}>
 			<Grid
 				container
 				spacing={0}
@@ -22,7 +23,12 @@ const Home = () => {
 				</Grid>
 				<Grid item justify="center" spacing={2} container>
 					<Grid item>
-						<Button variant="contained" size="large" color="secondary">
+						<Button
+							variant="contained"
+							size="large"
+							color="secondary"
+							onClick={() => history.push(`/meeting/${uuidV4()}`)}
+						>
 							Create a Room
 						</Button>
 					</Grid>
@@ -38,7 +44,7 @@ const Home = () => {
 					</Grid>
 				</Grid>
 			</Grid>
-		</>
+		</Paper>
 	)
 }
 

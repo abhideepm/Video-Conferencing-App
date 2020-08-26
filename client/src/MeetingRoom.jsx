@@ -1,6 +1,6 @@
-import { Grid } from '@material-ui/core'
+import { Grid, Paper } from '@material-ui/core'
 import Peer from 'peerjs'
-import { React, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import io from 'socket.io-client'
 import VideoStream from './VideoStream'
@@ -83,14 +83,14 @@ const MeetingRoom = () => {
 	}, [])
 
 	return (
-		<>
+		<Paper style={{ minHeight: '100vh' }}>
 			<Grid container>
 				{response}
 				{videoStreams.map(videoProp => (
 					<VideoStream {...videoProp} />
 				))}
 			</Grid>
-		</>
+		</Paper>
 	)
 }
 
