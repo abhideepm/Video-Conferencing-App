@@ -43,17 +43,6 @@ const MeetingRoom = () => {
 		peers.current[userId] = call
 	}
 
-	socket.on('user-disconnected', userId => {
-		if (peers.current[userId]) {
-			console.log('disconnect client')
-			peers.current[userId].close()
-			const filteredObj = Object.keys(peers.current)
-				.filter(key => key !== userId)
-				.reduce((acc, curr) => ({ ...acc, [curr]: peers.current[curr] }), {})
-			peers.current = filteredObj
-		}
-	})
-
 	useEffect(() => {
 		myPeer.on('open', userId => {
 			socket.emit('join-room', id, userId)
@@ -78,6 +67,13 @@ const MeetingRoom = () => {
 					connectToNewUser(userId, stream)
 				})
 			})
+
+		socket.on('user-disconnected', userId => {
+			if (peers.current[userId]) {
+				peers.current[userId].close()
+				delete peers.current[userId]
+			}
+		})
 	}, [])
 
 	return (
