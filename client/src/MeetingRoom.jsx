@@ -1,4 +1,4 @@
-import { Grid, Paper } from '@material-ui/core'
+import { Button, Grid, Paper, Typography } from '@material-ui/core'
 import Peer from 'peerjs'
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
@@ -13,17 +13,18 @@ const MeetingRoom = () => {
 	const socket = io(ENDPOINT)
 	const peers = useRef({})
 	const [videoStreams, setVideoStreams] = useState([])
+	const history = useHistory()
 
 	const addVideoStream = (userVideoStream, muteStatus) => {
 		const videoProperties = {
 			stream: userVideoStream,
 			muted: muteStatus,
 		}
-		console.log(videoProperties)
-		console.log(videoStreams)
+		console.log('inside', videoProperties)
+		console.log('inside', videoStreams)
 		setVideoStreams(videoStreams.concat(videoProperties))
 	}
-	console.log(videoStreams)
+	console.log('outside', videoStreams)
 
 	const removeVideoStream = userStream => {
 		setVideoStreams(videoStreams.filter(obj => obj.stream !== userStream))
@@ -82,9 +83,24 @@ const MeetingRoom = () => {
 	return (
 		<Paper style={{ minHeight: '100vh' }}>
 			<Grid container>
+				<Grid item xs={12} style={{ textAlign: 'center' }}>
+					<Typography variant="h2">Your Meeting ID is:</Typography>
+					<Typography variant="h4" color="secondary">
+						{id}
+					</Typography>
+				</Grid>
 				{videoStreams.map(videoProp => (
 					<VideoStream {...videoProp} />
 				))}
+				<Grid item xs={12} style={{ textAlign: 'center' }}>
+					<Button
+						variant="contained"
+						color="secondary"
+						onClick={() => history.push('/home')}
+					>
+						Exit Meeting
+					</Button>
+				</Grid>
 			</Grid>
 		</Paper>
 	)

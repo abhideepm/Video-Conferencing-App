@@ -1,10 +1,12 @@
-import React from 'react'
-import { Grid, Typography, TextField, Button, Paper } from '@material-ui/core'
+import { Button, Grid, Paper, TextField, Typography } from '@material-ui/core'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { v4 as uuidV4 } from 'uuid'
 
 const JoinMeeting = () => {
 	const history = useHistory()
+	const [meetingId, setMeetingId] = useState('')
+
 	return (
 		<Paper style={{ minHeight: '100vh' }}>
 			<Grid
@@ -29,12 +31,23 @@ const JoinMeeting = () => {
 						id="meetingID"
 						color="secondary"
 						style={{ minWidth: '100vh' }}
+						value={meetingId}
+						onChange={e => setMeetingId(e.target.value)}
+						required
+						autoFocus
 					/>
 				</Grid>
 				<Grid item></Grid>
 				<Grid item container direction="column" alignItems="center" spacing={2}>
 					<Grid item>
-						<Button size="large" color="secondary" variant="contained">
+						<Button
+							size="large"
+							color="secondary"
+							variant="contained"
+							onClick={() =>
+								meetingId ? history.push(`/meeting/${meetingId}`) : null
+							}
+						>
 							Submit
 						</Button>
 					</Grid>
