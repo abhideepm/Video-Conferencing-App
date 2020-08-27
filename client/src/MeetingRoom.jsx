@@ -5,12 +5,12 @@ import { useHistory, useParams } from 'react-router-dom'
 import io from 'socket.io-client'
 import VideoStream from './VideoStream'
 const port = process.env.PORT || 5000
-// const ENDPOINT = `http://127.0.0.1:${port}/`
+const ENDPOINT = `http://127.0.0.1:${port}/`
 
 const MeetingRoom = () => {
 	const { id } = useParams()
 	const myPeer = new Peer()
-	const socket = io()
+	const socket = io(ENDPOINT)
 	const peers = useRef({})
 	const [videoStreams, setVideoStreams] = useState([])
 
