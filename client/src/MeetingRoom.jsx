@@ -20,21 +20,29 @@ const MeetingRoom = () => {
 			stream: userVideoStream,
 			muted: muteStatus,
 		}
-		console.log('inside', videoProperties)
-		console.log('inside', videoStreams)
-		setVideoStreams(videoStreams.concat(videoProperties))
+		setVideoStreams(curr => {
+			let flag = true
+			curr.forEach(val => {
+				if (val.stream.id === videoProperties.stream.id) {
+					flag = false
+				}
+			})
+			if (flag) return [...curr, videoProperties]
+			else return curr
+		})
 	}
-	console.log('outside', videoStreams)
-
+	console.log(videoStreams)
 	const removeVideoStream = userStream => {
 		setVideoStreams(videoStreams.filter(obj => obj.stream !== userStream))
 	}
 
 	const connectToNewUser = (userId, stream) => {
+		console.log('connectToNewUser')
 		const call = myPeer.call(userId, stream)
 		let otherUserVideoStream = ''
 		call.on('stream', userVideoStream => {
 			otherUserVideoStream = userVideoStream
+			console.log('new user')
 			addVideoStream(userVideoStream, false)
 		})
 		call.on('close', () => {
@@ -57,6 +65,7 @@ const MeetingRoom = () => {
 					let otherUserVideoStream = ''
 					call.on('stream', userVideoStream => {
 						otherUserVideoStream = userVideoStream
+						console.log('answer a call')
 						addVideoStream(userVideoStream, false)
 					})
 					call.on('close', () => {
