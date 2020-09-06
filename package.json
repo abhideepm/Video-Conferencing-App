@@ -5,6 +5,13 @@
 	"repository": "https://github.com/abhideepm/Video-Conferencing-App.git",
 	"author": "Abhideep Maity <abhideepm@gmail.com>",
 	"license": "MIT",
+	"engines": {
+		"node": "14.7.0"
+	},
+	"cacheDirectories": [
+		"node_modules",
+		"client/node_modules"
+	],
 	"scripts": {
 		"client": "cd client && yarn start",
 		"server": "nodemon server.js",
