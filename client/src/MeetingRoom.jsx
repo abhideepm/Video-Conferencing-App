@@ -33,7 +33,7 @@ const MeetingRoom = () => {
 	}
 	console.log(videoStreams)
 	const removeVideoStream = userStream => {
-		setVideoStreams(videoStreams.filter(obj => obj.stream !== userStream))
+		setVideoStreams(curr => curr.filter(obj => obj.stream !== userStream))
 	}
 
 	const connectToNewUser = (userId, stream) => {
